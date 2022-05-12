@@ -32,12 +32,17 @@ func (d *Digma) Detect(ctx context.Context) (*resource.Resource, error) {
 		EnvironmentKey.String(d.DeploymentEnvironment)}
 
 	if bi, ok := debug.ReadBuildInfo(); ok {
-		for _, setting := range bi.Settings {
-			if setting.Key == "vcs.revision" {
-				attributes = append(attributes, CommitIdKey.String(setting.Value))
-				break
+		if len(d.CommitId) > 0 {
+			attributes = append(attributes, CommitIdKey.String(d.CommitId))
+		} else {
+			for _, setting := range bi.Settings {
+				if setting.Key == "vcs.revision" {
+					attributes = append(attributes, CommitIdKey.String(setting.Value))
+					break
+				}
 			}
 		}
+
 		//The main package path
 		attributes = append(attributes, ModuleKey.String(bi.Main.Path))
 	}
