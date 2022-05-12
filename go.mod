@@ -1,4 +1,4 @@
-module github.com/digma.ai/opentelemetry-go-instrumentation/detector
+module github.com/digma-ai/opentelemetry-go-instrumentation
 
 go 1.18
 
