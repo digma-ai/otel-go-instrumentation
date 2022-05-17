@@ -1,7 +1,0 @@
-POST http://localhost:8011/auth HTTP/1.1
-content-type: application/json
-
-{
-    "Id": "123123123123123",
-    "name": "John"
-}

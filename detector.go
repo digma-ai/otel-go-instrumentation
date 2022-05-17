@@ -3,9 +3,8 @@ package detector
 import (
 	"context"
 	"fmt"
+	"go/build"
 	"runtime/debug"
-
-	//"fmt"
 
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/sdk/resource"
@@ -13,20 +12,27 @@ import (
 )
 
 const (
-	CommitIdKey    = attribute.Key("scm.commit.id")
-	ModuleKey      = attribute.Key("code.module.path")
+	CommitIdKey         = attribute.Key("scm.commit.id")
+	ModuleImportPathKey = attribute.Key("code.module.importpath")
+	ModulePathKey       = attribute.Key("code.module.path")
+
+	OtherImportPathKey = attribute.Key("code.othermodule.importpath")
+	OtherModulePathKey = attribute.Key("code.othermodule.path")
+
 	EnvironmentKey = semconv.DeploymentEnvironmentKey
 )
 
-type Digma struct {
+type DigmaDetector struct {
 	DeploymentEnvironment string
 	CommitId              string
+	OtherImportPath       []string
+	OtherModulePath       []string
 }
 
 // compile time assertion that Digma implements the resource.Detector interface.
-var _ resource.Detector = (*Digma)(nil)
+var _ resource.Detector = (*DigmaDetector)(nil)
 
-func (d *Digma) Detect(ctx context.Context) (*resource.Resource, error) {
+func (d *DigmaDetector) Detect(ctx context.Context) (*resource.Resource, error) {
 
 	attributes := []attribute.KeyValue{
 		EnvironmentKey.String(d.DeploymentEnvironment)}
@@ -43,35 +49,37 @@ func (d *Digma) Detect(ctx context.Context) (*resource.Resource, error) {
 			}
 		}
 
-		//The main package path
-		attributes = append(attributes, ModuleKey.String(bi.Main.Path))
+		attributes = append(attributes, ModuleImportPathKey.String(bi.Main.Path))
+		imported, err := build.Default.Import(bi.Main.Path, ".", build.FindOnly)
+		if err != nil {
+			panic(err)
+		} else {
+			attributes = append(attributes, ModulePathKey.String(imported.Root))
+		}
+
+		var otherImportPaths []string
+		var otherModulePaths []string
+
+		for i := 0; i < len(d.OtherImportPath); i++ {
+
+			imported, err := build.Default.Import(d.OtherImportPath[i], ".", build.FindOnly)
+			if err != nil {
+				panic(err)
+			}
+			otherImportPaths = append(otherImportPaths, imported.ImportPath)
+			otherModulePaths = append(otherModulePaths, imported.Root)
+		}
+		attributes = append(attributes, OtherImportPathKey.StringSlice(otherImportPaths))
+		attributes = append(attributes, OtherModulePathKey.StringSlice(otherModulePaths))
+
 	}
 
 	var err error
 
 	fmt.Println("digma attributes:")
 	for _, attr := range attributes {
-		fmt.Printf("%s=%s\n", attr.Key, attr.Value.AsString())
+		fmt.Printf("%s=%s\n", attr.Key, attr.Value.Emit())
 	}
 
 	return resource.NewSchemaless(attributes...), err
 }
-
-// func GetModulePath(name, version string) (string, error) {
-// 	cache, ok := os.LookupEnv("GOMODCACHE")
-// 	if !ok {
-// 		cache = path.Join(os.Getenv("GOPATH"), "pkg", "mod")
-// 	}
-
-// 	escapedPath, err := module.EscapePath(name)
-// 	if err != nil {
-// 		return "", err
-// 	}
-
-// 	escapedVersion, err := module.EscapeVersion(version)
-// 	if err != nil {
-// 		return "", err
-// 	}
-
-// 	return path.Join(cache, escapedPath+"@"+escapedVersion), nil
-// }
