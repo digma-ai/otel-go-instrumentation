@@ -1,4 +1,5 @@
-module github.com/digma-ai/opentelemetry-go-instrumentation
+module github.com/digma-ai/otel-go-instrumentation
+
 
 go 1.18
 
