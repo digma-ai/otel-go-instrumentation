@@ -16,17 +16,16 @@ const (
 	ModuleImportPathKey = attribute.Key("code.module.importpath")
 	ModulePathKey       = attribute.Key("code.module.path")
 
-	OtherImportPathKey = attribute.Key("code.othermodule.importpath")
-	OtherModulePathKey = attribute.Key("code.othermodule.path")
+	OtherModuleImportPathKey = attribute.Key("code.othermodule.importpath")
+	OtherModulePathKey       = attribute.Key("code.othermodule.path")
 
 	EnvironmentKey = semconv.DeploymentEnvironmentKey
 )
 
 type DigmaDetector struct {
-	DeploymentEnvironment string
-	CommitId              string
-	OtherImportPath       []string
-	OtherModulePath       []string
+	DeploymentEnvironment  string
+	CommitId               string
+	OtherModulesImportPath []string
 }
 
 // compile time assertion that Digma implements the resource.Detector interface.
@@ -57,20 +56,20 @@ func (d *DigmaDetector) Detect(ctx context.Context) (*resource.Resource, error) 
 			attributes = append(attributes, ModulePathKey.String(imported.Root))
 		}
 
-		var otherImportPaths []string
-		var otherModulePaths []string
+		var otherModulesImportPath []string
+		var otherModulesPath []string
 
-		for i := 0; i < len(d.OtherImportPath); i++ {
+		for i := 0; i < len(d.OtherModulesImportPath); i++ {
 
-			imported, err := build.Default.Import(d.OtherImportPath[i], ".", build.FindOnly)
+			imported, err := build.Default.Import(d.OtherModulesImportPath[i], ".", build.FindOnly)
 			if err != nil {
 				panic(err)
 			}
-			otherImportPaths = append(otherImportPaths, imported.ImportPath)
-			otherModulePaths = append(otherModulePaths, imported.Root)
+			otherModulesImportPath = append(otherModulesImportPath, imported.ImportPath)
+			otherModulesPath = append(otherModulesPath, imported.Root)
 		}
-		attributes = append(attributes, OtherImportPathKey.StringSlice(otherImportPaths))
-		attributes = append(attributes, OtherModulePathKey.StringSlice(otherModulePaths))
+		attributes = append(attributes, OtherModuleImportPathKey.StringSlice(otherModulesImportPath))
+		attributes = append(attributes, OtherModulePathKey.StringSlice(otherModulesPath))
 
 	}
 
