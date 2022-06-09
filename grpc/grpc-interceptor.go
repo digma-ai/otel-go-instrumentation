@@ -26,7 +26,9 @@ func UnaryClientInterceptor() grpc.UnaryClientInterceptor {
 		span := trace.SpanFromContext(ctx)
 		span.SetAttributes(attribute.String("endpoint.function_full_name", method))
 
-		return nil
+		// standard call of interceptor
+		err := invoker(ctx, method, req, reply, cc, callOpts...)
+		return err
 	}
 }
 
@@ -45,14 +47,9 @@ func StreamClientInterceptor() grpc.StreamClientInterceptor {
 		span := trace.SpanFromContext(ctx)
 		span.SetAttributes(attribute.String("endpoint.function_full_name", method))
 
-		// s, err := streamer(ctx, desc, cc, method, callOpts...)
-		// if err != nil {
-		// 	return s, err
-		// }
-		// stream := otelgrpc.wrapClientStream(ctx, s, desc)
-
-		//TODO: check if return nil as grpc.ClientStream is valid...
-		return nil, nil
+		// standard call of interceptor
+		clientStream, err := streamer(ctx, desc, cc, method, callOpts...)
+		return clientStream, err
 	}
 }
 
@@ -69,7 +66,9 @@ func UnaryServerInterceptor() grpc.UnaryServerInterceptor {
 		span := trace.SpanFromContext(ctx)
 		span.SetAttributes(attribute.String("endpoint.function_full_name", info.FullMethod))
 
-		return req, nil
+		// standard call of interceptor
+		resp, err := handler(ctx, req)
+		return resp, err
 	}
 }
 
@@ -87,6 +86,8 @@ func StreamServerInterceptor() grpc.StreamServerInterceptor {
 		span := trace.SpanFromContext(ctx)
 		span.SetAttributes(attribute.String("endpoint.function_full_name", info.FullMethod))
 
-		return nil
+		// standard call of interceptor
+		err := handler(srv, ss)
+		return err
 	}
 }
