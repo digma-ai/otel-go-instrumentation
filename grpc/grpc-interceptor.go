@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 	"strings"
 
@@ -66,6 +67,8 @@ func UnaryServerInterceptor() grpc.UnaryServerInterceptor {
 	) (interface{}, error) {
 
 		methodFqn := buildMethodFqn(info.Server, info.FullMethod)
+		//TODO: debug line, remove it
+		fmt.Println("methodFqn:", methodFqn)
 
 		span := trace.SpanFromContext(ctx)
 		span.SetAttributes(attribute.String("endpoint.function_full_name", methodFqn))
@@ -87,6 +90,8 @@ func StreamServerInterceptor() grpc.StreamServerInterceptor {
 	) error {
 
 		methodFqn := buildMethodFqn(srv, info.FullMethod)
+		//TODO: debug line, remove it
+		fmt.Println("methodFqn:", methodFqn)
 
 		ctx := ss.Context()
 		span := trace.SpanFromContext(ctx)
@@ -104,10 +109,20 @@ func methodOnly(fullMethod string) string {
 	return fullMethod[ix+1:]
 }
 
+func strictTypeOf(srv interface{}) reflect.Type {
+	valo := reflect.ValueOf(srv)
+	if valo.Kind() == reflect.Ptr {
+		return valo.Elem().Type()
+	} else {
+		return valo.Type()
+	}
+}
+
 func fqnOfService(srv interface{}) string {
-	tyo := reflect.TypeOf(srv)
-	srvName := tyo.String()
-	fqn := strings.TrimPrefix(srvName, "*")
+	typeOfService := strictTypeOf(srv)
+
+	fqn := typeOfService.PkgPath() + ".(*" + typeOfService.Name() + ")"
+
 	return fqn
 }
 
