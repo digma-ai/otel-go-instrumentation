@@ -2,6 +2,8 @@ package grpc
 
 import (
 	"context"
+	"reflect"
+	"strings"
 
 	"google.golang.org/grpc"
 
@@ -63,8 +65,10 @@ func UnaryServerInterceptor() grpc.UnaryServerInterceptor {
 		handler grpc.UnaryHandler,
 	) (interface{}, error) {
 
+		methodFqn := buildMethodFqn(info.Server, info.FullMethod)
+
 		span := trace.SpanFromContext(ctx)
-		span.SetAttributes(attribute.String("endpoint.function_full_name", info.FullMethod))
+		span.SetAttributes(attribute.String("endpoint.function_full_name", methodFqn))
 
 		// standard call of interceptor
 		resp, err := handler(ctx, req)
@@ -82,12 +86,35 @@ func StreamServerInterceptor() grpc.StreamServerInterceptor {
 		handler grpc.StreamHandler,
 	) error {
 
+		methodFqn := buildMethodFqn(srv, info.FullMethod)
+
 		ctx := ss.Context()
 		span := trace.SpanFromContext(ctx)
-		span.SetAttributes(attribute.String("endpoint.function_full_name", info.FullMethod))
+		span.SetAttributes(attribute.String("endpoint.function_full_name", methodFqn))
 
 		// standard call of interceptor
 		err := handler(srv, ss)
 		return err
 	}
+}
+
+func methodOnly(fullMethod string) string {
+	ix := strings.LastIndex(fullMethod, "/")
+
+	return fullMethod[ix+1:]
+}
+
+func fqnOfService(srv interface{}) string {
+	tyo := reflect.TypeOf(srv)
+	srvName := tyo.String()
+	fqn := strings.TrimPrefix(srvName, "*")
+	return fqn
+}
+
+func buildMethodFqn(srv interface{}, fullMethod string) string {
+	srvFqn := fqnOfService(srv)
+	methodName := methodOnly(fullMethod)
+
+	//TODO: make sure FQN contains the module name
+	return srvFqn + "." + methodName
 }
