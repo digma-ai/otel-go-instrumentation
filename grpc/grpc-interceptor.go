@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"reflect"
+	"runtime"
 	"strings"
 
 	"google.golang.org/grpc"
@@ -109,27 +110,20 @@ func methodOnly(fullMethod string) string {
 	return fullMethod[ix+1:]
 }
 
-func strictTypeOf(srv interface{}) reflect.Type {
-	valo := reflect.ValueOf(srv)
-	if valo.Kind() == reflect.Ptr {
-		return valo.Elem().Type()
-	} else {
-		return valo.Type()
+func fqnOfServiceWithMethod(srv interface{}, methodName string) string {
+	typeOfService := reflect.TypeOf(srv)
+	methodRef, ok := typeOfService.MethodByName(methodName)
+	if !ok {
+		panic("cannot find method name '" + methodName + "' for service '" + typeOfService.Name() + "'")
 	}
-}
-
-func fqnOfService(srv interface{}) string {
-	typeOfService := strictTypeOf(srv)
-
-	fqn := typeOfService.PkgPath() + ".(*" + typeOfService.Name() + ")"
-
+	methodFunc4pc := runtime.FuncForPC(methodRef.Func.Pointer())
+	fqn := methodFunc4pc.Name()
 	return fqn
 }
 
 func buildMethodFqn(srv interface{}, fullMethod string) string {
-	srvFqn := fqnOfService(srv)
 	methodName := methodOnly(fullMethod)
+	fqn := fqnOfServiceWithMethod(srv, methodName)
 
-	//TODO: make sure FQN contains the module name
-	return srvFqn + "." + methodName
+	return fqn
 }
