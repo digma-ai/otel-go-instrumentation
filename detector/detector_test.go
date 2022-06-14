@@ -21,6 +21,8 @@ func TestResourceAttributes(t *testing.T) {
 		EnvironmentKey.String("dev"),
 		OtherModuleImportPathKey.StringSlice(make([]string, 0)),
 		OtherModulePathKey.StringSlice(make([]string, 0)),
+		SpanMappingPatternKey.String(""),
+		SpanMappingReplacementKey.String(""),
 	}
 	expectedResource := resource.NewWithAttributes(semconv.SchemaURL, resourceAttributes...)
 
@@ -43,7 +45,9 @@ func TestShouldFailIfNoDeploymentEnvironment(t *testing.T) {
 }
 
 func TestShouldFailIfUnableToResolveCurrModuleInfo(t *testing.T) {
-	detector := DigmaDetector{}
+	detector := DigmaDetector{
+		DeploymentEnvironment: "dev",
+	}
 	_, err := detector.Detect(context.Background())
 	expectedErrorMsg := "import \"\": invalid import path"
 	assert.EqualErrorf(t, err, expectedErrorMsg, "Error should be: %v, got: %v", expectedErrorMsg, err)

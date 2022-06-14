@@ -22,6 +22,9 @@ const (
 	OtherModulePathKey       = attribute.Key("code.othermodule.path")
 
 	EnvironmentKey = semconv.DeploymentEnvironmentKey
+
+	SpanMappingPatternKey     = attribute.Key("digma.span_mapping_pattern")
+	SpanMappingReplacementKey = attribute.Key("digma.span_mapping_replacement")
 )
 
 type DigmaDetector struct {
@@ -30,6 +33,8 @@ type DigmaDetector struct {
 	OtherModulesImportPath []string
 	ModuleImportPath       string //module canonical name
 	ModulePath             string // workspace(application) physical path
+	SpanMappingPattern     string
+	SpanMappingReplacement string
 }
 
 // compile time assertion that Digma implements the resource.Detector interface.
@@ -94,6 +99,9 @@ func (d *DigmaDetector) Detect(ctx context.Context) (*resource.Resource, error) 
 	}
 	attributes = append(attributes, OtherModuleImportPathKey.StringSlice(otherModulesImportPath))
 	attributes = append(attributes, OtherModulePathKey.StringSlice(otherModulesPath))
+
+	attributes = append(attributes, SpanMappingPatternKey.String(d.SpanMappingPattern))
+	attributes = append(attributes, SpanMappingReplacementKey.String(d.SpanMappingReplacement))
 
 	fmt.Println("digma attributes:")
 	for _, attr := range attributes {
