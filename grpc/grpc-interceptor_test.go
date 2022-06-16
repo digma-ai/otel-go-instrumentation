@@ -21,6 +21,13 @@ func TestBuildMethodFqnGoodPath(t *testing.T) {
 	}
 }
 
+func TestBuildMethodFqnBadPath(t *testing.T) {
+
+	impl := &impl4tests{}
+	_, err := buildMethodFqn(impl, "/api/Do123")
+	assert.Error(t, err)
+}
+
 func assertEndsWith(t *testing.T, entireValue string, expectedSuffix string) {
 	assert.True(t, strings.HasSuffix(entireValue, expectedSuffix), "'"+entireValue+"' has no expected suffix '"+expectedSuffix+"'")
 }
