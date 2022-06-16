@@ -7,6 +7,7 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/labstack/gommon/log"
 	"google.golang.org/grpc"
 
 	"go.opentelemetry.io/otel/attribute"
@@ -47,13 +48,13 @@ func UnaryServerInterceptor() grpc.UnaryServerInterceptor {
 		handler grpc.UnaryHandler,
 	) (interface{}, error) {
 
-		methodFqn, er1 := buildMethodFqn(info.Server, info.FullMethod)
-		if er1 != nil {
-			return nil, er1
+		methodFqn, errOfFqn := buildMethodFqn(info.Server, info.FullMethod)
+		if errOfFqn != nil {
+			log.Error(errOfFqn)
+		} else {
+			span := trace.SpanFromContext(ctx)
+			span.SetAttributes(attribute.String("endpoint.function_full_name", methodFqn))
 		}
-
-		span := trace.SpanFromContext(ctx)
-		span.SetAttributes(attribute.String("endpoint.function_full_name", methodFqn))
 
 		// standard call of interceptor
 		resp, err := handler(ctx, req)
@@ -71,14 +72,14 @@ func StreamServerInterceptor() grpc.StreamServerInterceptor {
 		handler grpc.StreamHandler,
 	) error {
 
-		methodFqn, er1 := buildMethodFqn(srv, info.FullMethod)
-		if er1 != nil {
-			return er1
+		methodFqn, errOfFqn := buildMethodFqn(srv, info.FullMethod)
+		if errOfFqn != nil {
+			log.Error(errOfFqn)
+		} else {
+			ctx := ss.Context()
+			span := trace.SpanFromContext(ctx)
+			span.SetAttributes(attribute.String("endpoint.function_full_name", methodFqn))
 		}
-
-		ctx := ss.Context()
-		span := trace.SpanFromContext(ctx)
-		span.SetAttributes(attribute.String("endpoint.function_full_name", methodFqn))
 
 		// standard call of interceptor
 		err := handler(srv, ss)
