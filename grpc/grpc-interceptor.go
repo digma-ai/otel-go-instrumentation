@@ -99,7 +99,8 @@ func buildMethodFqn(srv interface{}, fullMethod string) (string, error) {
 	typeOfService := reflect.TypeOf(srv)
 	methodRef, ok := typeOfService.MethodByName(methodName)
 	if !ok {
-		return "", fmt.Errorf("cannot find method name '" + methodName + "' for service type '" + typeOfService.Name() + "'")
+		// very unlikely to happen in GRPC, but still handling it in order to avoid runtime error
+		return "", fmt.Errorf("Cant find method name '" + methodName + "' at type named '" + typeOfService.Elem().Name() + "'")
 	}
 	methodFunc4pc := runtime.FuncForPC(methodRef.Func.Pointer())
 	fqn := methodFunc4pc.Name()
