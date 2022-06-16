@@ -1,10 +1,10 @@
 package grpc
 
 import (
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	stack_assert "github.com/subchen/go-stack/assert"
 )
 
 func TestMethodOnly(t *testing.T) {
@@ -17,7 +17,7 @@ func TestBuildMethodFqnGoodPath(t *testing.T) {
 	impl := &impl4tests{}
 	methodFqn, err := buildMethodFqn(impl, "/api/DoSomething")
 	if assert.NoError(t, err) {
-		assertEndsWith(t, methodFqn, "(*impl4tests).DoSomething")
+		stack_assert.HasSuffix(t, methodFqn, "(*impl4tests).DoSomething")
 	}
 }
 
@@ -26,10 +26,6 @@ func TestBuildMethodFqnBadPath(t *testing.T) {
 	impl := &impl4tests{}
 	_, err := buildMethodFqn(impl, "/api/Do123")
 	assert.Error(t, err)
-}
-
-func assertEndsWith(t *testing.T, entireValue string, expectedSuffix string) {
-	assert.True(t, strings.HasSuffix(entireValue, expectedSuffix), "'"+entireValue+"' has no expected suffix '"+expectedSuffix+"'")
 }
 
 type iface4tests interface {
