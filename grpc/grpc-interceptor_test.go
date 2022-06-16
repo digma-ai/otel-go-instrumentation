@@ -16,8 +16,9 @@ func TestBuildMethodFqnGoodPath(t *testing.T) {
 
 	impl := &impl4tests{}
 	methodFqn, err := buildMethodFqn(impl, "/api/DoSomething")
-	assert.Nil(t, err, "err should be nil")
-	assertEndsWith(t, methodFqn, "(*impl4tests).DoSomething")
+	if assert.NoError(t, err) {
+		assertEndsWith(t, methodFqn, "(*impl4tests).DoSomething")
+	}
 }
 
 func assertEndsWith(t *testing.T, entireValue string, expectedSuffix string) {
