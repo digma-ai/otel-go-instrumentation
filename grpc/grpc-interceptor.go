@@ -37,7 +37,6 @@ import (
 //  )
 //
 
-
 // UnaryServerInterceptor returns a grpc.UnaryServerInterceptor suitable
 // for use in a grpc.NewServer call.
 func UnaryServerInterceptor() grpc.UnaryServerInterceptor {
@@ -48,9 +47,10 @@ func UnaryServerInterceptor() grpc.UnaryServerInterceptor {
 		handler grpc.UnaryHandler,
 	) (interface{}, error) {
 
-		methodFqn := buildMethodFqn(info.Server, info.FullMethod)
-		//TODO: debug line, remove it
-		fmt.Println("methodFqn:", methodFqn)
+		methodFqn, er1 := buildMethodFqn(info.Server, info.FullMethod)
+		if er1 != nil {
+			return nil, er1
+		}
 
 		span := trace.SpanFromContext(ctx)
 		span.SetAttributes(attribute.String("endpoint.function_full_name", methodFqn))
@@ -71,9 +71,10 @@ func StreamServerInterceptor() grpc.StreamServerInterceptor {
 		handler grpc.StreamHandler,
 	) error {
 
-		methodFqn := buildMethodFqn(srv, info.FullMethod)
-		//TODO: debug line, remove it
-		fmt.Println("methodFqn:", methodFqn)
+		methodFqn, er1 := buildMethodFqn(srv, info.FullMethod)
+		if er1 != nil {
+			return er1
+		}
 
 		ctx := ss.Context()
 		span := trace.SpanFromContext(ctx)
@@ -91,20 +92,16 @@ func methodOnly(fullMethod string) string {
 	return fullMethod[ix+1:]
 }
 
-func fqnOfServiceWithMethod(srv interface{}, methodName string) string {
+func buildMethodFqn(srv interface{}, fullMethod string) (string, error) {
+	methodName := methodOnly(fullMethod)
+
 	typeOfService := reflect.TypeOf(srv)
 	methodRef, ok := typeOfService.MethodByName(methodName)
 	if !ok {
-		panic("cannot find method name '" + methodName + "' for service '" + typeOfService.Name() + "'")
+		return "", fmt.Errorf("cannot find method name '" + methodName + "' for service type '" + typeOfService.Name() + "'")
 	}
 	methodFunc4pc := runtime.FuncForPC(methodRef.Func.Pointer())
 	fqn := methodFunc4pc.Name()
-	return fqn
-}
 
-func buildMethodFqn(srv interface{}, fullMethod string) string {
-	methodName := methodOnly(fullMethod)
-	fqn := fqnOfServiceWithMethod(srv, methodName)
-
-	return fqn
+	return fqn, nil
 }
