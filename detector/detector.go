@@ -113,5 +113,6 @@ func (d *DigmaDetector) Detect(ctx context.Context) (*resource.Resource, error) 
 		fmt.Printf("%s=%s\n", attr.Key, attr.Value.Emit())
 	}
 
+	attributes = append(attributes, semconv.TelemetrySDKLanguageGo)
 	return resource.NewWithAttributes(semconv.SchemaURL, attributes...), nil
 }
