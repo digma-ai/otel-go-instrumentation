@@ -21,13 +21,31 @@ import (
 	"github.com/digma-ai/otel-go-instrumentation/detector"
 )
 
-resource.WithDetectors(
-    &detector.DigmaDetector{
-        DeploymentEnvironment:       "Production",
-        CommitId:                    "", //optional
-    },
-)
+res, err := resource.New(ctx,
+		resource.WithAttributes(
+			// the service name used to display traces in backends and mandatory for digma backend
+			semconv.ServiceNameKey.String(serviceName),
+		),
+
+		resource.WithDetectors(
+			&detector.DigmaDetector{
+				DeploymentEnvironment: "Production",
+				CommitId:              "", //optional
+			},
+		))
 ```
+
+Now your TracerProvider will have the following resource attributes and attach them to new spans:
+
+| Resource Attribute | Example Value |
+| --- | --- |
+|`deployment.environment` | Production [or hostname if not set]
+|`scm.commit.id` | 07e239f2f3d8adc12566eaf66e0ad670f36202b5 [OPTIONAL]
+|`code.module.importpath` | github.com/digma-ai/otel-go-instrumentation
+|`code.module.path` | /build/work/otel-go-instrumentation
+
+
+
 You can use a standard OTLP exporter to the Digma collector for local deployments:
 ```go
 import (
