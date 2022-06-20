@@ -24,6 +24,7 @@ func TestResourceAttributes(t *testing.T) {
 		OtherModulePathKey.StringSlice(make([]string, 0)),
 		SpanMappingPatternKey.String(""),
 		SpanMappingReplacementKey.String(""),
+		semconv.TelemetrySDKLanguageGo,
 	}
 	expectedResource := resource.NewWithAttributes(semconv.SchemaURL, resourceAttributes...)
 
@@ -49,6 +50,7 @@ func TestShouldFallbackToMachineNameIfNoDeploymentEnvironment(t *testing.T) {
 		OtherModulePathKey.StringSlice(make([]string, 0)),
 		SpanMappingPatternKey.String(""),
 		SpanMappingReplacementKey.String(""),
+		semconv.TelemetrySDKLanguageGo,
 	}
 	expectedResource := resource.NewWithAttributes(semconv.SchemaURL, resourceAttributes...)
 
