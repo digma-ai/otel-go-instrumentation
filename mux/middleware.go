@@ -1,4 +1,4 @@
-package mux
+package main
 
 import (
 	"errors"
