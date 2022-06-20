@@ -2,6 +2,7 @@ package detector
 
 import (
 	"context"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -37,11 +38,28 @@ func TestResourceAttributes(t *testing.T) {
 	assert.Equal(t, expectedResource, resourceObj, "Resource object returned is incorrect")
 }
 
-func TestShouldFailIfNoDeploymentEnvironment(t *testing.T) {
-	detector := DigmaDetector{}
-	_, err := detector.Detect(context.Background())
-	expectedErrorMsg := "DeploymentEnvironment is required"
-	assert.EqualErrorf(t, err, expectedErrorMsg, "Error should be: %v, got: %v", expectedErrorMsg, err)
+func TestShouldFallbackToMachineNameIfNoDeploymentEnvironment(t *testing.T) {
+	hostname, _ := os.Hostname()
+	resourceAttributes := []attribute.KeyValue{
+		ModuleImportPathKey.String("github.com/company/app"),
+		ModulePathKey.String("/app"),
+		CommitIdKey.String("123"),
+		EnvironmentKey.String(hostname),
+		OtherModuleImportPathKey.StringSlice(make([]string, 0)),
+		OtherModulePathKey.StringSlice(make([]string, 0)),
+		SpanMappingPatternKey.String(""),
+		SpanMappingReplacementKey.String(""),
+	}
+	expectedResource := resource.NewWithAttributes(semconv.SchemaURL, resourceAttributes...)
+
+	detector := DigmaDetector{
+		CommitId:         "123",
+		ModuleImportPath: "github.com/company/app",
+		ModulePath:       "/app",
+	}
+	resourceObj, err := detector.Detect(context.Background())
+	require.NoError(t, err)
+	assert.Equal(t, expectedResource, resourceObj, "Resource object returned is incorrect")
 }
 
 func TestShouldFailIfUnableToResolveCurrModuleInfo(t *testing.T) {
