@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"go/build"
+	"os"
 	"runtime/debug"
 	"strings"
 
@@ -43,11 +44,15 @@ var _ resource.Detector = (*DigmaDetector)(nil)
 func (d *DigmaDetector) Detect(ctx context.Context) (*resource.Resource, error) {
 	deploymentEnvironment := strings.TrimSpace(d.DeploymentEnvironment)
 	if deploymentEnvironment == "" {
-		return nil, errors.New("DeploymentEnvironment is required")
+		name, err := os.Hostname()
+		if err != nil {
+			return nil, err
+		}
+		deploymentEnvironment = name
 	}
 
 	attributes := []attribute.KeyValue{
-		EnvironmentKey.String(d.DeploymentEnvironment)}
+		EnvironmentKey.String(deploymentEnvironment)}
 
 	moduleImportPath := strings.TrimSpace(d.ModuleImportPath)
 	modulePath := strings.TrimSpace(d.ModulePath)
