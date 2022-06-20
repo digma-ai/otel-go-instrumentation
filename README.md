@@ -1,5 +1,6 @@
 # opentelemetry-go-instrumentation-digma
-[![Tests](https://github.com/digma-ai/otel-go-instrumentation/actions/workflows/ci.yaml/badge.svg)](https://github.com/digma-ai/otel-go-instrumentation/actions/workflows/ci.yaml)
+[![Tests](https://github.com/digma-ai/otel-go-instrumentation/actions/workflows/ci.yaml/badge.svg)](https://github.com/digma-ai/otel-go-instrumentation/actions?query=workflow%3Abuild_and_test+branch%3Amain)
+[![Docs](https://godoc.org/go.opentelemetry.io/contrib?status.svg)][goref-url]
 
 This package provides instrumentation to make it easy to set up Digma to work along with your OpenTelemetry instrumentation.
 
