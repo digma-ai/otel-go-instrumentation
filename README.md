@@ -1,5 +1,4 @@
 # opentelemetry-go-instrumentation-digma
-
 [![Tests](https://github.com/digma-ai/otel-go-instrumentation/actions/workflows/ci.yaml/badge.svg)](https://github.com/digma-ai/otel-go-instrumentation/actions/workflows/ci.yaml)
 
 This package provides instrumentation helpers and tools to make it easy to set up Digma to work along with your OpenTelemetry instrumentation.
@@ -70,3 +69,5 @@ service:
 `OtherModulesImportPath` | `[] string` | code.othermodule.importpath | Specify additional satellite or infra modules to track | None |
 ` **Internal** ` | `[] string` | code.othermodule.path | physical paths of  `OtherModulesImportPath` option | The instrumentation will attempt to read this variable from `debug.ReadBuildInfo()`
 
+
+[goref-url]: https://pkg.go.dev/github.com/digma-ai/otel-go-instrumentation
