@@ -48,7 +48,7 @@ func (d *DigmaDetector) Detect(ctx context.Context) (*resource.Resource, error) 
 		if err != nil {
 			return nil, err
 		}
-		deploymentEnvironment = name
+		deploymentEnvironment = name + "[local]"
 	}
 
 	attributes := []attribute.KeyValue{
