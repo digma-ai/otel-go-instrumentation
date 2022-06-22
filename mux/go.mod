@@ -1,6 +1,6 @@
 module github.com/digma-ai/otel-go-instrumentation/mux
 
-go 1.11
+go 1.17
 
 require (
 	github.com/gorilla/mux v1.8.0
