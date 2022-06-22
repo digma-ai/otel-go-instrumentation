@@ -45,4 +45,4 @@ func main() {
 
 | Span Attribute | Example Value |
 | --- | --- |
-|`endpoint.function_full_name` | github.com/digma-ai/otel-sample-application-go/src/userservice/user.(*UserController).Add-fm
+|`endpoint.function_full_name` | main.(*server).SayHello

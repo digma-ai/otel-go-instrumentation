@@ -18,6 +18,13 @@ go get -u github.com/digma-ai/otel-go-instrumentation@v1.0.5
 
 ## Usage
 
+### Set up
+- [Initiallizing opentelemetry resource](#initiallizing-opentelemetry-resource)
+- [Framework instrumentation](#framework-instrumentation)
+
+
+### Initiallizing opentelemetry resource
+
 If you have an existing OpenTelemtry instrumentaiton set up, simply use the DigmaDetector object to create a `Resource `object and merge it with your resource to import all of the needed attributes. 
 
 ```go
@@ -38,6 +45,7 @@ res, err := resource.New(ctx,
 			},
 		))
 ```
+> Ensure required service name (semconv.ServiceNameKey) is set on resource.
 
 Now your TracerProvider will have the following resource attributes and attach them to new spans:
 
@@ -80,7 +88,7 @@ service:
 
 
 
-## The Digma instrumentation options
+### The Digma instrumentation options
 
 | Options | Input Type  | Attribute Key | Description | Default |
 | --- | --- | --- | --- | --- |
@@ -89,17 +97,13 @@ service:
 `ModuleImportPath` | `string` | code.module.importpath | Module canonical name | The instrumentation will attempt to read this variable from `debug.ReadBuildInfo()`|
 `ModulePath` | `string` | code.module.path | workspace(application) physical path | The instrumentation will attempt to read this variable from `debug.ReadBuildInfo()` |
 `OtherModulesImportPath` | `[] string` | code.othermodule.importpath | Specify additional satellite or infra modules to track | None |
-` **Internal** ` | `[] string` | code.othermodule.path | physical paths of  `OtherModulesImportPath` option | The instrumentation will attempt to read this variable from `debug.ReadBuildInfo()`
+` **Internal** ` | `[] string` | code.othermodule.path | physical paths of  `OtherModulesImportPath` option | The instrumentation will attempt to read this variable from `debug.ReadBuildInfo()`|
 
-## Instrumentation Packages
-
-The [OpenTelemetry registry](https://opentelemetry.io/registry/) is the best place to discover instrumentation packages.
-It will include packages outside of this project.
+### Framework instrumentation
 
 The following instrumentation packages provides instrumentation for additional span attributes provided on top of the opentelmetery-instrumentation packages.
 
 In order to be able to effectively glean code-object based insights for continuous feedback and map them back in the IDE, Digma inserts additional attribute into the OTEL resource attributes.
-
 
 | Instrumentation Package |
 | :---------------------: |
@@ -107,6 +111,9 @@ In order to be able to effectively glean code-object based insights for continuo
 | [github.com/digma-ai/otel-go-instrumentation/grpc](./grpc)|  
 | [github.com/digma-ai/otel-go-instrumentation/mux](./mux) | 
 
+
+The [OpenTelemetry registry](https://opentelemetry.io/registry/) is the best place to discover instrumentation packages.
+It will include packages outside of this project.
 
 
 [goref-url]: https://pkg.go.dev/github.com/digma-ai/otel-go-instrumentation
