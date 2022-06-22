@@ -71,14 +71,15 @@ func (d *DigmaDetector) Detect(ctx context.Context) (*resource.Resource, error) 
 	if bi, ok := debug.ReadBuildInfo(); ok {
 		if commitId != "" {
 			attributes = append(attributes, CommitIdKey.String(d.CommitId))
-		} else {
-			for _, setting := range bi.Settings {
-				if setting.Key == "vcs.revision" {
-					attributes = append(attributes, CommitIdKey.String(setting.Value))
-					break
-				}
-			}
 		}
+		// else {
+		// 	for _, setting := range bi.Settings {
+		// 		if setting.Key == "vcs.revision" {
+		// 			attributes = append(attributes, CommitIdKey.String(setting.Value))
+		// 			break
+		// 		}
+		// 	}
+		// }
 		if moduleImportPath == "" && modulePath == "" {
 			attributes = append(attributes, ModuleImportPathKey.String(bi.Main.Path)) //module path
 			imported, err := build.Default.Import(bi.Path, ".", build.FindOnly)
