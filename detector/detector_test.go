@@ -13,7 +13,7 @@ import (
 )
 
 func TestResourceAttributes(t *testing.T) {
-
+	hostname, _ := os.Hostname()
 	// Expected resource object
 	resourceAttributes := []attribute.KeyValue{
 		ModuleImportPathKey.String("github.com/company/app"),
@@ -25,6 +25,7 @@ func TestResourceAttributes(t *testing.T) {
 		SpanMappingPatternKey.String(""),
 		SpanMappingReplacementKey.String(""),
 		semconv.TelemetrySDKLanguageGo,
+		semconv.HostNameKey.String(hostname),
 	}
 	expectedResource := resource.NewWithAttributes(semconv.SchemaURL, resourceAttributes...)
 
@@ -45,12 +46,13 @@ func TestShouldFallbackToMachineNameIfNoDeploymentEnvironment(t *testing.T) {
 		ModuleImportPathKey.String("github.com/company/app"),
 		ModulePathKey.String("/app"),
 		CommitIdKey.String("123"),
-		EnvironmentKey.String(hostname),
+		EnvironmentKey.String(hostname + "[local]"),
 		OtherModuleImportPathKey.StringSlice(make([]string, 0)),
 		OtherModulePathKey.StringSlice(make([]string, 0)),
 		SpanMappingPatternKey.String(""),
 		SpanMappingReplacementKey.String(""),
 		semconv.TelemetrySDKLanguageGo,
+		semconv.HostNameKey.String(hostname),
 	}
 	expectedResource := resource.NewWithAttributes(semconv.SchemaURL, resourceAttributes...)
 

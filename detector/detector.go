@@ -43,12 +43,12 @@ var _ resource.Detector = (*DigmaDetector)(nil)
 
 func (d *DigmaDetector) Detect(ctx context.Context) (*resource.Resource, error) {
 	deploymentEnvironment := strings.TrimSpace(d.DeploymentEnvironment)
+	hostname, err := os.Hostname()
+	if err != nil {
+		return nil, err
+	}
 	if deploymentEnvironment == "" {
-		name, err := os.Hostname()
-		if err != nil {
-			return nil, err
-		}
-		deploymentEnvironment = name
+		deploymentEnvironment = hostname + "[local]"
 	}
 
 	attributes := []attribute.KeyValue{
@@ -112,6 +112,7 @@ func (d *DigmaDetector) Detect(ctx context.Context) (*resource.Resource, error) 
 	for _, attr := range attributes {
 		fmt.Printf("%s=%s\n", attr.Key, attr.Value.Emit())
 	}
+	attributes = append(attributes, semconv.HostNameKey.String(hostname))
 
 	attributes = append(attributes, semconv.TelemetrySDKLanguageGo)
 	return resource.NewWithAttributes(semconv.SchemaURL, attributes...), nil
