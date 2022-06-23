@@ -21,7 +21,7 @@ go get -u github.com/digma-ai/otel-go-instrumentation@v1.0.8
 - [Instrumenting your OpenTelemetry resource](#instrumenting-your-opentelemetry-resource)
 - [Adding instrumentation for specific server frameworks](#adding-instrumentation-for-specific-server-frameworks)
 - [Exporting trace data to Digma](#exporting-trace-data-to-digma)
-- [Fine tuning and ehhancements](#fine-tuning-and-enhancements)
+- [Fine tuning and ehhancements](#fine-tuning-and-ehhancements)
 - [Additional instrumentation](#additional-instrumentation)
 
 
