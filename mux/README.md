@@ -5,7 +5,7 @@ This package provides instrumentation for additional span attributes provided on
 In order to be able to effectively glean code-object based insights for continuous feedback and map them back in the IDE, Digma inserts additional attribute into the OTEL resource attributes. 
 
 ## Pre-requisites
-* Go with Go modules enabled.
+*  Go with Go modules enabled  `version: 1.17 or above.`
 *  [opentelmetery-instrumentation-gorilla/mux](https://go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux) package
 
 ## Installing the module

@@ -7,8 +7,7 @@ This package provides instrumentation to make it easy to set up Digma to work al
 In order to be able to effectively glean code-object based insights for continuous feedback and map them back in the IDE, Digma inserts additional attribute into the OTEL resource attributes. 
 
 ## Pre-requisites
-*  Go with Go modules enabled.
-
+*  Go with Go modules enabled  `version: 1.17 or above.`
 
 ## Installing the module
 ```
