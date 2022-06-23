@@ -74,7 +74,7 @@ func main() {
 
 First, you need to have a Digma backend up and running. You can follow the instructions in the [Digma project repository](https://github.com/digma-ai/digma) to quickly get set up using Docker.
 
-You can use a standard OTLP exporter to the Digma collector for local deployments:
+You can use a standard OTLP exporter for local deployments:
 
 ```go
 import (
@@ -88,7 +88,7 @@ traceClient := otlptracegrpc.NewClient(
 	)
 ```
 
-Alternative, if you're already using a collector component you can simply modify its configuration file:
+Alternative, if you're already using a `collector` component you can simply modify its configuration file:
 
 ```yaml
 exporters:
