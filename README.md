@@ -21,12 +21,13 @@ go get -u github.com/digma-ai/otel-go-instrumentation@v1.0.8
 - [Instrumenting your OpenTelemetry resource](#instrumenting-your-opentelemetry-resource)
 - [Adding instrumentation for specific server frameworks](#adding-instrumentation-for-specific-server-frameworks)
 - [Exporting trace data to Digma](#exporting-trace-data-to-digma)
-- [Framework instrumentation](#framework-instrumentation)
+- [Fine tuning and ehhancements](#fine-tuning-and-enhancements)
+- [Additional instrumentation](#additional-instrumentation)
 
 
 ### Instrumenting your OpenTelemetry resource
 
-Digma needs to add a few more attributes to your OTEL `Resource`. If you have an existing OpenTelemtry instrumentaiton set up, simply use the provided DigmaDetector object to create a `Resource` and merge it with your existing OTEL resource as seen below:
+Digma needs to add a few more attributes to your OTEL `Resource`. To update your OTEL setup, simply use the provided DigmaDetector object to create a `Resource` and merge it with your existing OTEL resource as seen below:
 
 ```go
 import (
@@ -41,7 +42,7 @@ res, err := resource.New(ctx,
 
 		resource.WithDetectors(
 			&detector.DigmaDetector{
-				DeploymentEnvironment: "Production",
+				DeploymentEnvironment: o,
 				CommitId:              "", //optional
 			},
 		))
@@ -105,9 +106,9 @@ In both cases, set the endpoint value to the URL of the Digma backend.
 
 That's it! You should be good to go.
 
-### The Digma instrumentation options
+### Fine tuning and ehhancements
 
-The following options can be set as a part of the OTEL Resource instrumentation. All of these are optional, but can help provide more context to the colleced traces:
+Digma allows you to set additional attributes as a part of setting up the OpenTelemetry Resource, to allow better observability visualization for commits, deployment environments, and more. All of these are optional, but can help provide more context to the colleced traces:
 
 | Options | Input Type  | Attribute Key | Description | Default |
 | --- | --- | --- | --- | --- |
@@ -118,6 +119,10 @@ The following options can be set as a part of the OTEL Resource instrumentation.
 `OtherModulesImportPath` | `[] string` | code.othermodule.importpath | Specify additional satellite or infra modules to track | None |
 ` **Internal** ` | `[] string` | code.othermodule.path | physical paths of  `OtherModulesImportPath` option | The instrumentation will attempt to read this variable from `debug.ReadBuildInfo()`|
 
+### Sample project
+
+You can find a sample GoLang application with specific examples for how to instrument the various server framework in our 
+[samples repo](https://github.com/digma-ai/otel-sample-application-go).
 ### Additional instrumentation
 
 The more instrumentation you add to your project, the more insights Digma will be able to provide.
