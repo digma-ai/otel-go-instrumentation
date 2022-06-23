@@ -71,7 +71,7 @@ func main() {
 
 ### Exporting trace data to Digma
 
-First, you need to have a Digma backend up and running. You can follow the instructions in the [Digma project repository](https://github.com/digma-ai/digma) to quickly get set up using Docker.
+First, you need to have a Digma backend up and running. You can follow the instructions in the [Digma project repository](https://github.com/digma-ai/digma#running-digma-locally) to quickly get set up using Docker.
 
 You can use a standard OTLP exporter for local deployments:
 
