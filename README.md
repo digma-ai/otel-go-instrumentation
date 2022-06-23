@@ -26,7 +26,7 @@ go get -u github.com/digma-ai/otel-go-instrumentation@v1.0.8
 
 ### Instrumenting your OpenTelemetry resource
 
-If you have an existing OpenTelemtry instrumentaiton set up, simply use the DigmaDetector object to create a `Resource ` and merge it with your existing OTEL resource to import all of the needed attributes. 
+Digma needs to add a few more attributes to your OTEL `Resource`. If you have an existing OpenTelemtry instrumentaiton set up, simply use the provided DigmaDetector object to create a `Resource` and merge it with your existing OTEL resource as seen below:
 
 ```go
 import (
@@ -46,8 +46,6 @@ res, err := resource.New(ctx,
 			},
 		))
 ```
-
-This will add a few additional attributes to the OTEL `Resource` component needed by Digma to map the information back to the code.
 
 ### Adding instrumentation for specific server frameworks
 
