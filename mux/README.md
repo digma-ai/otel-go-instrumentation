@@ -10,7 +10,7 @@ In order to be able to effectively glean code-object based insights for continuo
 
 ## Installing the module
 ```
-go get -u github.com/digma-ai/otel-go-instrumentation/mux@v1.0.0
+go get -u github.com/digma-ai/otel-go-instrumentation/mux@v1.0.1
 ```
 
 ### Instrumenting your mux project
