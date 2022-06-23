@@ -42,7 +42,7 @@ res, err := resource.New(ctx,
 
 		resource.WithDetectors(
 			&detector.DigmaDetector{
-				DeploymentEnvironment: o,
+				DeploymentEnvironment: os.Getenv("DEPLOYMENT_ENV"),
 				CommitId:              "", //optional
 			},
 		))
