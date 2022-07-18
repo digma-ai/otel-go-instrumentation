@@ -3,7 +3,6 @@ package detector
 import (
 	"context"
 	"errors"
-	"fmt"
 	"go/build"
 	"os"
 	"runtime/debug"
@@ -108,11 +107,6 @@ func (d *DigmaDetector) Detect(ctx context.Context) (*resource.Resource, error) 
 
 	attributes = append(attributes, SpanMappingPatternKey.String(d.SpanMappingPattern))
 	attributes = append(attributes, SpanMappingReplacementKey.String(d.SpanMappingReplacement))
-
-	fmt.Println("digma attributes:")
-	for _, attr := range attributes {
-		fmt.Printf("%s=%s\n", attr.Key, attr.Value.Emit())
-	}
 	attributes = append(attributes, semconv.HostNameKey.String(hostname))
 
 	attributes = append(attributes, semconv.TelemetrySDKLanguageGo)
