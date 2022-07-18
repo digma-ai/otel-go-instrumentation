@@ -3,7 +3,6 @@ package detector
 import (
 	"context"
 	"errors"
-	"fmt"
 	"go/build"
 	"os"
 	"runtime/debug"
