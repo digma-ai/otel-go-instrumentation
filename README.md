@@ -112,7 +112,7 @@ Digma allows you to set additional attributes as a part of setting up the OpenTe
 
 | Options | Input Type  | Attribute Key | Description | Default |
 | --- | --- | --- | --- | --- |
-| `DigmaEnvironment` | `string` | digma.environment |  The Environment describes where the running process is deployed. (e.g production, staging, ci) | If no depployment environment is provided, we'll assume this is a local deployment env and mark it using the local hostname. It will be visible to that machine only.
+| `DigmaEnvironment` | `string` | digma.environment |  The Environment describes where the running process is deployed. (e.g production, staging, ci) | If no deployment environment is provided, we'll assume this is a local deployment env and mark it using the local hostname. It will be visible to that machine only.
 | `CommitId` | `string`  | scm.commit.id | The specific commit identifier of the running code. | The instrumentation will attempt to read this variable from `debug.ReadBuildInfo()`|
 `ModuleImportPath` | `string` | code.module.importpath | Module canonical name | The instrumentation will attempt to read this variable from `debug.ReadBuildInfo()`|
 `ModulePath` | `string` | code.module.path | workspace(application) physical path | The instrumentation will attempt to read this variable from `debug.ReadBuildInfo()` |
