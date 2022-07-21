@@ -11,7 +11,7 @@ In order to be able to effectively glean code-object based insights for continuo
 
 ## Installing the module
 ```
-go get -u github.com/digma-ai/otel-go-instrumentation@v1.0.9
+go get -u github.com/digma-ai/otel-go-instrumentation@v1.0.10
 ```
 
 
