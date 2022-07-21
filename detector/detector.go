@@ -21,14 +21,14 @@ const (
 	OtherModuleImportPathKey = attribute.Key("code.othermodule.importpath")
 	OtherModulePathKey       = attribute.Key("code.othermodule.path")
 
-	EnvironmentKey = semconv.DeploymentEnvironmentKey
+	EnvironmentKey = attribute.Key("digma.environment")
 
 	SpanMappingPatternKey     = attribute.Key("digma.span_mapping_pattern")
 	SpanMappingReplacementKey = attribute.Key("digma.span_mapping_replacement")
 )
 
 type DigmaDetector struct {
-	DeploymentEnvironment  string
+	DigmaEnvironment       string
 	CommitId               string
 	OtherModulesImportPath []string
 	ModuleImportPath       string //module canonical name
@@ -41,7 +41,7 @@ type DigmaDetector struct {
 var _ resource.Detector = (*DigmaDetector)(nil)
 
 func (d *DigmaDetector) Detect(ctx context.Context) (*resource.Resource, error) {
-	deploymentEnvironment := strings.TrimSpace(d.DeploymentEnvironment)
+	deploymentEnvironment := strings.TrimSpace(d.DigmaEnvironment)
 	hostname, err := os.Hostname()
 	if err != nil {
 		return nil, err
@@ -66,20 +66,20 @@ func (d *DigmaDetector) Detect(ctx context.Context) (*resource.Resource, error) 
 	} else if modulePath != "" {
 		return nil, errors.New("ModuleImportPath is required")
 	}
+	if commitId != "" {
+		attributes = append(attributes, CommitIdKey.String(d.CommitId))
+	}
 
-	if bi, ok := debug.ReadBuildInfo(); ok {
-		if commitId != "" {
-			attributes = append(attributes, CommitIdKey.String(d.CommitId))
-		}
-		// else {
-		// 	for _, setting := range bi.Settings {
-		// 		if setting.Key == "vcs.revision" {
-		// 			attributes = append(attributes, CommitIdKey.String(setting.Value))
-		// 			break
-		// 		}
-		// 	}
-		// }
-		if moduleImportPath == "" && modulePath == "" {
+	if moduleImportPath == "" && modulePath == "" {
+		if bi, ok := debug.ReadBuildInfo(); ok {
+			// else {
+			// 	for _, setting := range bi.Settings {
+			// 		if setting.Key == "vcs.revision" {
+			// 			attributes = append(attributes, CommitIdKey.String(setting.Value))
+			// 			break
+			// 		}
+			// 	}
+			// }
 			attributes = append(attributes, ModuleImportPathKey.String(bi.Main.Path)) //module path
 			imported, err := build.Default.Import(bi.Path, ".", build.FindOnly)
 			if err != nil {
@@ -87,6 +87,8 @@ func (d *DigmaDetector) Detect(ctx context.Context) (*resource.Resource, error) 
 			} else {
 				attributes = append(attributes, ModulePathKey.String(imported.Root))
 			}
+		} else {
+			return nil, errors.New("unable to read buildinfo. ModulePath and ModuleImportPath are required")
 		}
 	}
 
@@ -94,7 +96,6 @@ func (d *DigmaDetector) Detect(ctx context.Context) (*resource.Resource, error) 
 	var otherModulesPath []string
 
 	for i := 0; i < len(d.OtherModulesImportPath); i++ {
-
 		imported, err := build.Default.Import(d.OtherModulesImportPath[i], modulePath, build.FindOnly)
 		if err != nil {
 			return nil, err

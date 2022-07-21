@@ -30,10 +30,10 @@ func TestResourceAttributes(t *testing.T) {
 	expectedResource := resource.NewWithAttributes(semconv.SchemaURL, resourceAttributes...)
 
 	detector := DigmaDetector{
-		DeploymentEnvironment: "dev",
-		CommitId:              "123",
-		ModuleImportPath:      "github.com/company/app",
-		ModulePath:            "/app",
+		DigmaEnvironment: "dev",
+		CommitId:         "123",
+		ModuleImportPath: "github.com/company/app",
+		ModulePath:       "/app",
 	}
 	resourceObj, err := detector.Detect(context.Background())
 	require.NoError(t, err)
@@ -68,9 +68,9 @@ func TestShouldFallbackToMachineNameIfNoDeploymentEnvironment(t *testing.T) {
 
 func TestShouldFailIfUnableToResolveCurrModuleInfo(t *testing.T) {
 	detector := DigmaDetector{
-		DeploymentEnvironment: "dev",
+		DigmaEnvironment: "dev",
 	}
 	_, err := detector.Detect(context.Background())
-	expectedErrorMsg := "import \"\": invalid import path"
+	expectedErrorMsg := "unable to read buildinfo. ModulePath and ModuleImportPath are required"
 	assert.EqualErrorf(t, err, expectedErrorMsg, "Error should be: %v, got: %v", expectedErrorMsg, err)
 }
